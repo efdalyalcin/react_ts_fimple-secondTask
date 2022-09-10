@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/react_ts_fimple-secondTask/static/css/main.2ee913e3.css",
+    "main.js": "/react_ts_fimple-secondTask/static/js/main.f084af6d.js",
+    "index.html": "/react_ts_fimple-secondTask/index.html",
+    "main.2ee913e3.css.map": "/react_ts_fimple-secondTask/static/css/main.2ee913e3.css.map",
+    "main.f084af6d.js.map": "/react_ts_fimple-secondTask/static/js/main.f084af6d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2ee913e3.css",
+    "static/js/main.f084af6d.js"
+  ]
+}
