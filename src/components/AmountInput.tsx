@@ -2,18 +2,20 @@ type Props = {
   value: number;
   onChangeHandler: (event: number) => void;
   title: string;
+  labelId: string;
 };
 
 export default function AmountInput({
   value,
   onChangeHandler,
   title,
+  labelId,
 }: Props) {
   return (
     <div className="flex justify-between items-center">
-      <label htmlFor="amountInput">{title}</label>
+      <label htmlFor={labelId}>{title}</label>
       <input
-        id="amountInput"
+        id={labelId}
         type="number"
         min="0"
         className="h-full rounded-md border bg-transparent py-1 px-4 text-right

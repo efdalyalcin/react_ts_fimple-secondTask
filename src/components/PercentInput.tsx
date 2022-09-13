@@ -2,19 +2,21 @@ type Props = {
   value: number;
   onChangeHandler: (event: number) => void;
   title: string;
+  labelId: string;
 };
 
 export default function PercentInput({
   value,
   onChangeHandler,
   title,
+  labelId,
 }: Props) {
   return (
     <div className="flex justify-between items-center">
-      <label htmlFor="percentInput">{title}</label>
+      <label htmlFor={labelId}>{title}</label>
       <div className="relative flex items-center">
         <input
-          id="percentInput"
+          id={labelId}
           type="number"
           min="0"
           step=".01"
@@ -23,7 +25,7 @@ export default function PercentInput({
           value={value}
           onChange={(e) => onChangeHandler(Number(e.target.value))}
         />
-        <label htmlFor="percentInput" className="absolute right-1">
+        <label htmlFor={labelId} className="absolute right-1">
           %
         </label>
       </div>

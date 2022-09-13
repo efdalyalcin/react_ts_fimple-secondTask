@@ -13,8 +13,8 @@ export default function InstallmentProvider({ children }: Children) {
   const [installment, setInstallment] = useState(0);
   
   const handleInstallment = (value: number) => {
-    if (value >= 120) {
-      setInstallment(120);
+    if (value >= 520) {
+      setInstallment(520);
     } else if (value <= 0) {
       setInstallment(0);
     } else {
