@@ -37,7 +37,7 @@ export default function InputForm() {
         <PercentInput
           value={profitRate}
           onChangeHandler={setProfitRate}
-          title={"Aylık Kar oranı:"}
+          title={"Aylık Kâr oranı:"}
           labelId={"profitAmountLabel"}
         />
 

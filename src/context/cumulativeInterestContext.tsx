@@ -4,7 +4,7 @@ import { useInstallment } from "./installmentContext";
 const CumulativeInterestContext =
   React.createContext<CumulativeInterestContextType>({
     cumulativeInterest: [],
-    handleCumulativeInterest: (arr) => {},
+    handleCumulativeInterest: () => {},
   });
 
 type Children = {

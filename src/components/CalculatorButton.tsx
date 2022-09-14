@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useCumulativeInterest } from "../context/cumulativeInterestContext";
 import { useInstallment } from "../context/installmentContext";
+import { useSimpleInterest } from "../context/simpleInterestContext";
 
 type Props = {
   creditAmount: number;
@@ -16,11 +17,11 @@ export default function CalculatorButton({
   taxRate,
 }: Props) {
   const { cumulativeInterest, handleCumulativeInterest } = useCumulativeInterest();
+  const { simpleInterest, handleSimpleInterest} = useSimpleInterest();
   const { installment } = useInstallment();
 
-  console.log(cumulativeInterest);
+  console.log(cumulativeInterest, simpleInterest);
   
-
   const calculateBSMV = useCallback(
     (capitalAmount: number, profitRate: number, taxRate: number, period: string) => {
       switch (period) {
@@ -71,7 +72,7 @@ export default function CalculatorButton({
     []
   );
 
-  const calculateSimpleProfit = useCallback(
+  const calculateProfit = useCallback(
     (creditAmount: number, profitRate: number, period: string) => {
       switch (period) {
         case "Haftalık":
@@ -116,81 +117,170 @@ export default function CalculatorButton({
     []
   )
 
-  const calculateForm = () => {
-    const totalRate = calculateTotalRate(profitRate, taxRate, installmentPeriod);
-    const devided = totalRate * (1 + totalRate) ** installment;
-    const devider = (1 + totalRate) ** installment - 1;
+  const calculateForm = useCallback(
+    () => {
+      if (creditAmount && installment) {
+        const totalRate = calculateTotalRate(profitRate, taxRate, installmentPeriod);
+        const devided = totalRate * (1 + totalRate) ** installment;
+        const devider = (1 + totalRate) ** installment - 1;
+    
+        const eachInstallmentPayment =
+          Math.round(creditAmount * (devided / devider) * 100) / 100;
 
-    const eachInstallmentPayment =
-      Math.round(creditAmount * (devided / devider) * 100) / 100;
-
-    let totalStandingCredit = creditAmount;
-    const newArr = [];
-
-    for (let i = 0; i < installment; i++) {
-      if (i === 0) {
-        const paidAmount = calculateCapitalPaid(
-          eachInstallmentPayment,
-          calculateSimpleProfit(creditAmount, profitRate, installmentPeriod),
-          calculateKKDF(creditAmount, profitRate, taxRate, installmentPeriod),
-          calculateBSMV(creditAmount, profitRate, taxRate, installmentPeriod)
+        const simpleEachPayment = (
+          Math.round(((creditAmount * 
+            calculateTotalRate(profitRate, taxRate, installmentPeriod)) + 
+            creditAmount) / installment * 100) / 100
         );
 
-        const firstPayment: CalculatedInterest = {
-          installmentNumber: 1,
-          eachInstalmentAmount: eachInstallmentPayment,
-          capitalPaid: paidAmount,
-          remainingCapital: Math.ceil((creditAmount - paidAmount) * 100) / 100,
-          profitAmount: calculateSimpleProfit(
-            creditAmount,
-            profitRate,
-            installmentPeriod
-          ),
-          kkdf: calculateKKDF(creditAmount, profitRate, taxRate, installmentPeriod),
-          bsmv: calculateBSMV(creditAmount, profitRate, taxRate, installmentPeriod),
-        };
+        console.log(simpleEachPayment, eachInstallmentPayment, calculateTotalRate(profitRate, taxRate, installmentPeriod));
+    
+        let totalStandingCredit = creditAmount;
+        let simpleTotalStandingCredit = creditAmount;
+        const cumulativeArr = [];
+        const simpleArr = []; 
+    
+        for (let i = 0; i < installment; i++) {
+          if (i === 0) {
+            // cumulative interest calculation
+            const paidAmount = calculateCapitalPaid(
+              eachInstallmentPayment,
+              calculateProfit(creditAmount, profitRate, installmentPeriod),
+              calculateKKDF(creditAmount, profitRate, taxRate, installmentPeriod),
+              calculateBSMV(creditAmount, profitRate, taxRate, installmentPeriod)
+            );
+    
+            const firstPayment: CalculatedInterest = {
+              installmentNumber: 1,
+              eachInstalmentAmount: eachInstallmentPayment,
+              capitalPaid: paidAmount,
+              remainingCapital: Math.ceil((creditAmount - paidAmount) * 100) / 100,
+              profitAmount: calculateProfit(
+                creditAmount,
+                profitRate,
+                installmentPeriod
+              ),
+              kkdf: calculateKKDF(creditAmount, profitRate,
+                taxRate, installmentPeriod),
+              bsmv: calculateBSMV(creditAmount, profitRate,
+                taxRate, installmentPeriod),
+            };
 
-        totalStandingCredit = Math.ceil((creditAmount - paidAmount) * 100) / 100;
-        newArr.push(firstPayment);
-      } else {
-        const paidAmount = calculateCapitalPaid(
-          eachInstallmentPayment,
-          calculateSimpleProfit(
-            totalStandingCredit,
-            profitRate,
-            installmentPeriod
-          ),
-          calculateKKDF(totalStandingCredit, profitRate, taxRate, installmentPeriod),
-          calculateBSMV(totalStandingCredit, profitRate, taxRate, installmentPeriod)
-        );
+            // simple interest calculation
+            const simplePaidAmount = calculateCapitalPaid(
+              simpleEachPayment,
+              calculateProfit(creditAmount, profitRate, installmentPeriod),
+              calculateKKDF(creditAmount, profitRate, taxRate, installmentPeriod),
+              calculateBSMV(creditAmount, profitRate, taxRate, installmentPeriod)
+            );
 
-        const payments: CalculatedInterest = {
-          installmentNumber: i + 1,
-          eachInstalmentAmount: eachInstallmentPayment,
-          capitalPaid: paidAmount,
-          remainingCapital:
-            Math.ceil((totalStandingCredit - paidAmount) * 100) / 100,
-          profitAmount: calculateSimpleProfit(
-            totalStandingCredit,
-            profitRate,
-            installmentPeriod
-          ),
-          kkdf: calculateKKDF(totalStandingCredit, profitRate, taxRate, installmentPeriod),
-          bsmv: calculateBSMV(totalStandingCredit, profitRate, taxRate, installmentPeriod),
-        };
+            const simpleFirstPayment: CalculatedInterest = {
+              installmentNumber: 1,
+              eachInstalmentAmount: simpleEachPayment,
+              capitalPaid: simplePaidAmount,
+              remainingCapital: Math.ceil(
+                (creditAmount - simplePaidAmount) * 100) / 100,
+              profitAmount: calculateProfit(
+                creditAmount,
+                profitRate,
+                installmentPeriod
+              ),
+              kkdf: calculateKKDF(creditAmount, profitRate,
+                taxRate, installmentPeriod),
+              bsmv: calculateBSMV(creditAmount, profitRate,
+                taxRate, installmentPeriod),
+            };
+    
+            totalStandingCredit = Math.ceil((creditAmount - paidAmount) * 100) / 100;
+            simpleTotalStandingCredit = 
+              Math.ceil((creditAmount - simplePaidAmount) * 100) / 100;
 
-        totalStandingCredit =
-          Math.ceil((totalStandingCredit - paidAmount) * 100) / 100;
-        newArr.push(payments);
+            cumulativeArr.push(firstPayment);
+            simpleArr.push(simpleFirstPayment)
+          } else {
+            // cumulative interest calculation
+            const paidAmount = calculateCapitalPaid(
+              eachInstallmentPayment,
+              calculateProfit(
+                totalStandingCredit,
+                profitRate,
+                installmentPeriod
+              ),
+              calculateKKDF(totalStandingCredit, profitRate,
+                taxRate, installmentPeriod),
+              calculateBSMV(totalStandingCredit, profitRate,
+                taxRate, installmentPeriod)
+            );
+    
+            const payments: CalculatedInterest = {
+              installmentNumber: i + 1,
+              eachInstalmentAmount: eachInstallmentPayment,
+              capitalPaid: paidAmount,
+              remainingCapital:
+                Math.ceil((totalStandingCredit - paidAmount) * 100) / 100,
+              profitAmount: calculateProfit(
+                totalStandingCredit,
+                profitRate,
+                installmentPeriod
+              ),
+              kkdf: calculateKKDF(totalStandingCredit, profitRate,
+                taxRate, installmentPeriod),
+              bsmv: calculateBSMV(totalStandingCredit, profitRate,
+                taxRate, installmentPeriod),
+            };
+    
+            totalStandingCredit =
+              Math.ceil((totalStandingCredit - paidAmount) * 100) / 100;
+            cumulativeArr.push(payments);
+
+            // simple interest calculation
+            const simplePaidAmount = calculateCapitalPaid(
+              simpleEachPayment,
+              calculateProfit(
+                simpleTotalStandingCredit,
+                profitRate,
+                installmentPeriod
+              ),
+              calculateKKDF(simpleTotalStandingCredit, profitRate,
+                taxRate, installmentPeriod),
+              calculateBSMV(simpleTotalStandingCredit, profitRate,
+                taxRate, installmentPeriod)
+            );
+
+            const simplePayments: CalculatedInterest = {
+              installmentNumber: i + 1,
+              eachInstalmentAmount: simpleEachPayment,
+              capitalPaid: simplePaidAmount,
+              remainingCapital: Math.ceil(
+                (simpleTotalStandingCredit - simplePaidAmount) * 100) / 100,
+              profitAmount: calculateProfit(
+                simpleTotalStandingCredit,
+                profitRate,
+                installmentPeriod
+              ),
+              kkdf: calculateKKDF(simpleTotalStandingCredit, profitRate,
+                taxRate, installmentPeriod),
+              bsmv: calculateBSMV(simpleTotalStandingCredit, profitRate,
+                taxRate, installmentPeriod),
+            };
+
+            simpleTotalStandingCredit = Math.ceil(
+              (simpleTotalStandingCredit - simplePaidAmount) * 100) / 100;
+
+            simpleArr.push(simplePayments);
+          }
+        }
+    
+        const lastInstallment = cumulativeArr[cumulativeArr.length - 1];
+        lastInstallment.remainingCapital = 0;
+        cumulativeArr[cumulativeArr.length - 1] = lastInstallment;
+    
+        handleCumulativeInterest([...cumulativeArr]);
+        handleSimpleInterest([...simpleArr]);
       }
-    }
-
-    const lastInstallment = newArr[newArr.length - 1];
-    lastInstallment.remainingCapital = 0;
-    newArr[newArr.length - 1] = lastInstallment;
-
-    handleCumulativeInterest([...newArr]);
-  };
+    },
+    [creditAmount, installment, profitRate, taxRate, installmentPeriod]
+  );
 
   return (
     <button 
