@@ -1,19 +1,23 @@
 import { useCallback, useState } from "react";
-// import { useCreditAmount } from "../context/creditContext";
-// import { useInstallment } from "../context/installmentContext";
+import { useInstallment } from "../context/installmentContext";
 import AmountInput from "../components/AmountInput";
 import PercentInput from "./PercentInput";
 
 export default function InputForm() {
+  const {installment, handleInstallment} = useInstallment();
+
   const [creditAmount, setCreditAmount] = useState(0);
-  const [installment, setInstallment] = useState(0);
   const [profitRate, setProfitRate] = useState(0);
   const [installmentPeriod, setInstallmentPeriod] = useState("Aylık");
   const [taxRate, setTaxRate] = useState(0);
 
-  const [simpleInterest, setSimpleInterest] = useState<CalculatedInterest[]>(
-    []
-  );
+  // create context for simpleInterest & cumulativeInterest
+
+  const [cumulativeInterest, setCumulativeInterest] = useState<
+    (CalculatedInterest | null)[]
+  >(Array(installment).fill(null));
+
+  console.log(cumulativeInterest)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,8 +34,6 @@ export default function InputForm() {
     },
     []
   );
-
-  console.log(simpleInterest);
 
   const calculateKKDF = useCallback(
     (capitalAmount: number, profitRate: number, taxRate: number) => {
@@ -81,6 +83,8 @@ export default function InputForm() {
     const eachInstallmentPayment =
       Math.round(creditAmount * (devided / devider) * 100) / 100;
 
+    let totalStandingCredit = creditAmount;
+    const newArr = [];
     // const totalCreditAmount =
     //   Math.round((eachInstallmentPayment * installment) * 100) / 100;
 
@@ -97,7 +101,7 @@ export default function InputForm() {
           installmentNumber: 1,
           eachInstalmentAmount: eachInstallmentPayment,
           capitalPaid: paidAmount,
-          remainingCapital: creditAmount - paidAmount,
+          remainingCapital: Math.ceil((creditAmount - paidAmount) * 100) / 100,
           profitAmount: calculateSimpleProfit(
             creditAmount,
             profitRate,
@@ -106,32 +110,45 @@ export default function InputForm() {
           kkdf: calculateKKDF(creditAmount, profitRate, taxRate),
           bsmv: calculateBSMV(creditAmount, profitRate, taxRate),
         };
-        setSimpleInterest([firstPayment]);
+
+        totalStandingCredit = Math.ceil((creditAmount - paidAmount) * 100) / 100;
+        newArr.push(firstPayment);
       } else {
         const paidAmount = calculateCapitalPaid(
           eachInstallmentPayment,
-          calculateSimpleProfit(simpleInterest[i - 1]['remainingCapital'], profitRate, installmentPeriod),
-          calculateKKDF(simpleInterest[i - 1]['remainingCapital'], profitRate, taxRate),
-          calculateBSMV(simpleInterest[i - 1]['remainingCapital'], profitRate, taxRate)
+          calculateSimpleProfit(
+            totalStandingCredit,
+            profitRate,
+            installmentPeriod
+          ),
+          calculateKKDF(totalStandingCredit, profitRate, taxRate),
+          calculateBSMV(totalStandingCredit, profitRate, taxRate)
         );
 
         const payments: CalculatedInterest = {
           installmentNumber: i + 1,
           eachInstalmentAmount: eachInstallmentPayment,
           capitalPaid: paidAmount,
-          remainingCapital: creditAmount - paidAmount,
+          remainingCapital: Math.ceil((totalStandingCredit - paidAmount) * 100) / 100,
           profitAmount: calculateSimpleProfit(
-            simpleInterest[i - 1]['remainingCapital'],
+            totalStandingCredit,
             profitRate,
             installmentPeriod
           ),
-          kkdf: calculateKKDF(simpleInterest[i - 1]['remainingCapital'], profitRate, taxRate),
-          bsmv: calculateBSMV(simpleInterest[i - 1]['remainingCapital'], profitRate, taxRate),
-        }
+          kkdf: calculateKKDF(totalStandingCredit, profitRate, taxRate),
+          bsmv: calculateBSMV(totalStandingCredit, profitRate, taxRate),
+        };
 
-        setSimpleInterest([...simpleInterest, payments])
+        totalStandingCredit = Math.ceil((totalStandingCredit - paidAmount) * 100) / 100;
+        newArr.push(payments);
       }
     }
+
+    const lastInstallment = newArr[newArr.length - 1];
+    lastInstallment.remainingCapital = 0;
+    newArr[newArr.length - 1] = lastInstallment;
+
+    setCumulativeInterest([...newArr]);
   };
 
   return (
@@ -148,7 +165,7 @@ export default function InputForm() {
         />
         <AmountInput
           value={installment}
-          onChangeHandler={setInstallment}
+          onChangeHandler={handleInstallment}
           title={"Taksit Sayısı:"}
           labelId={"installmentCountLabel"}
         />

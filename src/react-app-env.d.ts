@@ -1,10 +1,5 @@
 /// <reference types="react-scripts" />
 
-interface CreditContextType {
-  creditAmount: number;
-  handleCreditAmount: (value: number) => void;
-}
-
 interface InstallmentContextType {
   installment: number;
   handleInstallment: (value: number) => void;
@@ -18,4 +13,9 @@ interface CalculatedInterest {
   profitAmount: number,
   kkdf: number,
   bsmv: number,
+}
+
+interface CumulativeInterestContextType {
+  cumulativeInterest: (CalculatedInterest | null)[];
+  handleCumulativeInterest: (arr: CalculatedInterest[]) => void;
 }
