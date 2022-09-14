@@ -169,7 +169,7 @@ export default function CalculatorButton({
             // simple interest calculation
             const simplePaidAmount = calculateCapitalPaid(
               simpleEachPayment,
-              calculateProfit(creditAmount, profitRate, installmentPeriod),
+              (calculateProfit(creditAmount, profitRate, installmentPeriod) / installment),
               calculateKKDF(creditAmount, profitRate, taxRate, installmentPeriod),
               calculateBSMV(creditAmount, profitRate, taxRate, installmentPeriod)
             );
@@ -182,7 +182,7 @@ export default function CalculatorButton({
                 (creditAmount - simplePaidAmount) * 100) / 100,
               profitAmount: calculateProfit(
                 creditAmount,
-                profitRate,
+                (profitRate / installment),
                 installmentPeriod
               ),
               kkdf: calculateKKDF(creditAmount, profitRate,
@@ -238,7 +238,7 @@ export default function CalculatorButton({
               simpleEachPayment,
               calculateProfit(
                 simpleTotalStandingCredit,
-                profitRate,
+                (profitRate / installment),
                 installmentPeriod
               ),
               calculateKKDF(simpleTotalStandingCredit, profitRate,
@@ -255,7 +255,7 @@ export default function CalculatorButton({
                 (simpleTotalStandingCredit - simplePaidAmount) * 100) / 100,
               profitAmount: calculateProfit(
                 simpleTotalStandingCredit,
-                profitRate,
+                (profitRate / installment),
                 installmentPeriod
               ),
               kkdf: calculateKKDF(simpleTotalStandingCredit, profitRate,
@@ -274,6 +274,13 @@ export default function CalculatorButton({
         const lastInstallment = cumulativeArr[cumulativeArr.length - 1];
         lastInstallment.remainingCapital = 0;
         cumulativeArr[cumulativeArr.length - 1] = lastInstallment;
+
+        const simpleLastInstallment = simpleArr[simpleArr.length - 1];
+        simpleLastInstallment.capitalPaid = Math.round(
+          (simpleLastInstallment.capitalPaid + simpleLastInstallment.remainingCapital) *
+          100) / 100;
+        simpleLastInstallment.remainingCapital = 0;
+        simpleArr[simpleArr.length - 1] = simpleLastInstallment;
     
         handleCumulativeInterest([...cumulativeArr]);
         handleSimpleInterest([...simpleArr]);
