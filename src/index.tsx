@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import CreditAmountProvider from './context/creditContext';
+import CumulativeInterestContextProvider from './context/cumulativeInterestContext';
 import InstallmentProvider from './context/installmentContext';
 
 
@@ -11,10 +11,10 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <CreditAmountProvider>
-      <InstallmentProvider>
+    <InstallmentProvider>
+      <CumulativeInterestContextProvider>
         <App />
-      </InstallmentProvider>
-    </CreditAmountProvider>
+      </CumulativeInterestContextProvider>
+    </InstallmentProvider>
   </React.StrictMode>
 );
