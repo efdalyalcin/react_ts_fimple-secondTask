@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import { useInstallment } from "../context/installmentContext";
 import AmountInput from "../components/AmountInput";
 import PercentInput from "./PercentInput";
@@ -12,8 +12,11 @@ export default function InputForm() {
   const [installmentPeriod, setInstallmentPeriod] = useState("Aylık");
   const [taxRate, setTaxRate] = useState(0);
 
+  const formRef = useRef({});
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    formRef.current.alertResult();
   };
 
   return (
@@ -69,6 +72,7 @@ export default function InputForm() {
         profitRate={profitRate}
         installmentPeriod={installmentPeriod}
         taxRate={taxRate}
+        ref={formRef}
       />
     </form>
   );
