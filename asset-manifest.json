@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/react_ts_fimple-secondTask/static/css/main.f667e190.css",
-    "main.js": "/react_ts_fimple-secondTask/static/js/main.bf4c5ba2.js",
+    "main.css": "/react_ts_fimple-secondTask/static/css/main.440f5b1e.css",
+    "main.js": "/react_ts_fimple-secondTask/static/js/main.b3b4c262.js",
     "index.html": "/react_ts_fimple-secondTask/index.html",
-    "main.f667e190.css.map": "/react_ts_fimple-secondTask/static/css/main.f667e190.css.map",
-    "main.bf4c5ba2.js.map": "/react_ts_fimple-secondTask/static/js/main.bf4c5ba2.js.map"
+    "main.440f5b1e.css.map": "/react_ts_fimple-secondTask/static/css/main.440f5b1e.css.map",
+    "main.b3b4c262.js.map": "/react_ts_fimple-secondTask/static/js/main.b3b4c262.js.map"
   },
   "entrypoints": [
-    "static/css/main.f667e190.css",
-    "static/js/main.bf4c5ba2.js"
+    "static/css/main.440f5b1e.css",
+    "static/js/main.b3b4c262.js"
   ]
 }
