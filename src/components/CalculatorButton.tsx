@@ -26,7 +26,7 @@ const CalculatorButton: React.ForwardRefRenderFunction<FormRef, Props> = (
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalAmountCumulative, setTotalAmountCumulative] = useState(0);
-  const [totalAmountSimple, setTotalAmountSimple] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
@@ -39,14 +39,14 @@ const CalculatorButton: React.ForwardRefRenderFunction<FormRef, Props> = (
       return {
         alertResult: () => {
           alert(
-            `Bileşik faiz ile ödenecek toplam tutar: ${totalAmountCumulative}` + 
-            `\nBasit faiz ile ödenecek toplam tutar: ${totalAmountSimple}` +
+            `Basit faiz ile ödenecek toplam tutar: ${totalAmount}` + 
+            `\nBileşik faiz ile ödenecek toplam tutar: ${totalAmountCumulative}` +
             `\nÖdeme tablosunu görmek için OK tuşuna basınız!`
           );
         },
       };
     },
-    [totalAmountCumulative, totalAmountSimple]
+    [totalAmountCumulative, totalAmount]
   );
 
   const handleClick = () => {
@@ -61,7 +61,7 @@ const CalculatorButton: React.ForwardRefRenderFunction<FormRef, Props> = (
     const results = calculationResults.calculatePayment();
 
     setTotalAmountCumulative(results.totalAmountCumulative);
-    setTotalAmountSimple(results.totalAmountSimple);
+    setTotalAmount(results.totalAmount);
     handleCumulativeInterest([...results.cumulativePayments]);
     handleSimpleInterest([...results.simplePayments]);
     setIsModalOpen(true);

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import ReactDom from "react-dom";
 import { useCumulativeInterest } from "../context/cumulativeInterestContext";
 import { useSimpleInterest } from "../context/simpleInterestContext";
@@ -19,19 +19,19 @@ export default function PaymentsTable({
   const menuRef = useRef<HTMLDivElement>();
 
   // mouse click outside handler
-  const handleClick = (e: MouseEvent) => {
+  const handleClick = useCallback((e: MouseEvent) => {
     if (menuRef.current && menuRef.current.contains(e.target as HTMLElement)) {
       return;
     }
     closeModal();
-  };
+  }, [closeModal]);
 
   useLayoutEffect(() => {
     document.addEventListener("mousedown", handleClick);
     return () => {
       document.removeEventListener("mousedown", handleClick);
     };
-  }, []);
+  }, [handleClick]);
 
   if (!isModalOpen) {
     return null;
@@ -41,6 +41,26 @@ export default function PaymentsTable({
     <div className="w-full bg-slate-300 absolute top-0 flex 
       flex-col items-center gap-2 p-6"
     >
+      <h2 className="font-bold text-xl">Faiz Ödeme Tablosu</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Taksit No</th>
+            <th>Taksit Tutarı</th>
+            <th>Ana Para</th>
+            <th>Kalan Ana Para</th>
+            <th>Kâr Tutarı</th>
+            <th>KKDF</th>
+            <th>BSMV</th>
+          </tr>
+        </thead>
+        <tbody>
+          {simpleInterest.map(installment => (
+            installment && (<TableRow installmentData={installment} key={installment.installmentNumber}/>)
+          ))}
+        </tbody>
+      </table>
+      <br />
       <h2 className="font-bold text-xl">Bileşik Faiz Ödeme Tablosu</h2>
       <table>
         <thead>
@@ -56,26 +76,6 @@ export default function PaymentsTable({
         </thead>
         <tbody>
           {cumulativeInterest.map(installment => (
-            installment && (<TableRow installmentData={installment} key={installment.installmentNumber}/>)
-          ))}
-        </tbody>
-      </table>
-      <br />
-      <h2 className="font-bold text-xl">Basit Faiz Ödeme Tablosu</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Taksit No</th>
-            <th>Taksit Tutarı</th>
-            <th>Ana Para</th>
-            <th>Kalan Ana Para</th>
-            <th>Kâr Tutarı</th>
-            <th>KKDF</th>
-            <th>BSMV</th>
-          </tr>
-        </thead>
-        <tbody>
-          {simpleInterest.map(installment => (
             installment && (<TableRow installmentData={installment} key={installment.installmentNumber}/>)
           ))}
         </tbody>

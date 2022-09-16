@@ -1,6 +1,6 @@
 {
-  "name": "react_ts-template-project",
-  "homepage": "https://efdalyalcin.github.io/react_ts-template-project",
+  "name": "Efdal Yalcin - Fimple Second Test Task",
+  "homepage": "https://efdalyalcin.github.io/react_ts_fimple-secondTask",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -22,7 +22,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -41,5 +43,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.8",
+    "gh-pages": "^4.0.0",
+    "postcss": "^8.4.16",
+    "tailwindcss": "^3.1.8"
   }
 }
