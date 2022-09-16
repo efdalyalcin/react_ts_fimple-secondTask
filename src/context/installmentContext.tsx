@@ -10,7 +10,7 @@ type Children = {
 }
 
 export default function InstallmentProvider({ children }: Children) {
-  const [installment, setInstallment] = useState(0);
+  const [installment, setInstallment] = useState(12);
   
   const handleInstallment = (value: number) => {
     if (value >= 520) {

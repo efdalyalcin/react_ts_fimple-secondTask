@@ -64,7 +64,10 @@ const CalculatorButton: React.ForwardRefRenderFunction<FormRef, Props> = (
     setTotalAmount(results.totalAmount);
     handleCumulativeInterest([...results.cumulativePayments]);
     handleSimpleInterest([...results.simplePayments]);
-    setIsModalOpen(true);
+
+    if (creditAmount && profitRate && installment) {
+      setIsModalOpen(true);
+    }
   };
 
   return (

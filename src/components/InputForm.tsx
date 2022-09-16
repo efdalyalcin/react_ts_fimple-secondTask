@@ -7,17 +7,19 @@ import CalculatorButton, { FormRef } from "./CalculatorButton";
 export default function InputForm() {
   const { installment, handleInstallment } = useInstallment();
 
-  const [creditAmount, setCreditAmount] = useState(0);
-  const [profitRate, setProfitRate] = useState(0);
+  const [creditAmount, setCreditAmount] = useState(1000);
+  const [profitRate, setProfitRate] = useState(1);
   const [installmentPeriod, setInstallmentPeriod] = useState("Aylık");
-  const [taxRate, setTaxRate] = useState(0);
+  const [taxRate, setTaxRate] = useState(10);
 
   const formRef = useRef<FormRef>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (formRef.current) {
-      formRef.current.alertResult();
+    if (creditAmount && installment && profitRate) {
+      if (formRef.current) {
+        formRef.current.alertResult();
+      }
     }
   };
 
