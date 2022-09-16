@@ -2,7 +2,7 @@ import InputForm from "./components/InputForm";
 
 function App() {
   return (
-    <div className="flex justify-center p-4">
+    <div className="h-screen flex justify-center p-4 items-center">
       <InputForm />
     </div>
   );

@@ -27,79 +27,115 @@ export class Calculator implements CalculatorType{
     this.taxRate = taxRate;
   }
 
-  private calculateBSMV(): number {
+  private calculateBSMV(creditAmount: number): number {
     switch (this.installmentPeriod) {
       case "Haftalık":
         return (
-          Math.round(this.creditAmount * this.profitRate * 0.01 
+          Math.round(creditAmount * this.profitRate * 0.01 
             * this.taxRate * 0.01 * 100 * (7/30)) / 100
         );
       case "Yıllık":
         return (
-          Math.round(this.creditAmount * this.profitRate * 0.01 
+          Math.round(creditAmount * this.profitRate * 0.01 
             * this.taxRate * 0.01 * 100 * (365/30)) / 100
         );
       default:
-        return Math.round(this.creditAmount * this.profitRate * 0.01 
+        return Math.round(creditAmount * this.profitRate * 0.01 
           * this.taxRate * 0.01 * 100) / 100;
     }
   }
 
-  private calculateKKDF(): number {
+  private calculateSimpleBSMV(creditAmount: number): number {
     switch (this.installmentPeriod) {
       case "Haftalık":
         return (
-          Math.round(this.creditAmount * this.profitRate * 0.01 
+          Math.round(creditAmount * this.profitRate * 0.01 
+            * this.taxRate * 0.01 * 100 * (7/30) / this.installment) / 100
+        );
+      case "Yıllık":
+        return (
+          Math.round(creditAmount * this.profitRate * 0.01 
+            * this.taxRate * 0.01 * 100 * (365/30) / this.installment) / 100
+        );
+      default:
+        return Math.round(creditAmount * this.profitRate * 0.01 
+          * this.taxRate * 0.01 * 100 / this.installment) / 100;
+    }
+  }
+
+  private calculateKKDF(creditAmount: number): number {
+    switch (this.installmentPeriod) {
+      case "Haftalık":
+        return (
+          Math.round(creditAmount * this.profitRate * 0.01 
             * this.taxRate * 0.01 * 1.5 * 100 * (7/30)) / 100
         );
       case "Yıllık":
         return (
-          Math.round(this.creditAmount * this.profitRate * 0.01 
+          Math.round(creditAmount * this.profitRate * 0.01 
             * this.taxRate * 0.01 * 1.5 * 100 * (365/30)) / 100
         );
       default:
-        return Math.round(this.creditAmount * this.profitRate * 0.01 
+        return Math.round(creditAmount * this.profitRate * 0.01 
           * this.taxRate * 0.01 * 1.5 * 100) / 100;
     }
   }
 
-  private calculateProfit(): number {
+  private calculateSimpleKKDF(creditAmount: number): number {
     switch (this.installmentPeriod) {
       case "Haftalık":
         return (
-          Math.round(this.creditAmount * this.profitRate *
-            0.01 * (7 / 30) * 100) / 100
+          Math.round(creditAmount * this.profitRate * 0.01 
+            * this.taxRate * 0.01 * 1.5 * 100 * (7/30) / this.installment) / 100
         );
       case "Yıllık":
         return (
-          Math.round(this.creditAmount * this.profitRate * 
-            0.01 * (365 / 30) * 100) /
+          Math.round(creditAmount * this.profitRate * 0.01 
+            * this.taxRate * 0.01 * 1.5 * 100 * (365/30) / this.installment) / 100
+        );
+      default:
+        return Math.round(creditAmount * this.profitRate * 0.01 
+          * this.taxRate * 0.01 * 1.5 * 100 / this.installment) / 100;
+    }
+  }
+
+  private calculateProfit(creditAmount: number): number {
+    switch (this.installmentPeriod) {
+      case "Haftalık":
+        return (
+          Math.round(creditAmount * (this.profitRate *
+            0.01) * (7 / 30) * 100) / 100
+        );
+      case "Yıllık":
+        return (
+          Math.round(creditAmount * (this.profitRate * 
+            0.01) * (365 / 30) * 100) /
           100
         );
       default:
         return (
-          Math.round(this.creditAmount * this.profitRate * 
-            0.01 * 100) / 100
+          Math.round(creditAmount * (this.profitRate * 
+            0.01) * 100) / 100
         );
     }
   }
 
-  private calculateSimpleProfit(): number {
+  private calculateSimpleProfit(creditAmount: number): number {
     switch (this.installmentPeriod) {
       case "Haftalık":
         return (
-          Math.round(this.creditAmount * this.profitRate *
-            0.01 * (7 / 30) / this.installment * 100) / 100
+          Math.round(creditAmount * this.profitRate *
+            0.01 * (7 / 30) * 100) / 100
         );
       case "Yıllık":
         return (
-          Math.round(this.creditAmount * this.profitRate * 
-            0.01 * (365 / 30) / this.installment * 100) / 100
+          Math.round(creditAmount * this.profitRate * 
+            0.01 * (365 / 30) * 100) / 100
         );
       default:
         return (
-          Math.round(this.creditAmount * this.profitRate * 
-            0.01 / this.installment * 100) / 100
+          Math.round(creditAmount * this.profitRate * 
+            0.01 * 100) / 100
         );
     }
   }
@@ -149,6 +185,8 @@ export class Calculator implements CalculatorType{
         Math.round(((this.creditAmount * this.calculateTotalRate()) + 
           this.creditAmount) / this.installment * 100) / 100
       );
+
+      console.log(simpleEachPayment)
   
       let totalStandingCredit = this.creditAmount;
       let simpleTotalStandingCredit = this.creditAmount;
@@ -161,27 +199,27 @@ export class Calculator implements CalculatorType{
           // cumulative interest calculation
           const paidAmount = this.calculateCapitalPaid(
             eachInstallmentPayment,
-            this.calculateProfit(),
-            this.calculateKKDF(),
-            this.calculateBSMV()
+            this.calculateProfit(totalStandingCredit),
+            this.calculateKKDF(totalStandingCredit),
+            this.calculateBSMV(totalStandingCredit)
           );
   
           const firstPayment: CalculatedInterest = {
             installmentNumber: 1,
             eachInstalmentAmount: eachInstallmentPayment,
             capitalPaid: paidAmount,
-            remainingCapital: Math.ceil((this.creditAmount - paidAmount) * 100) / 100,
-            profitAmount: this.calculateProfit(),
-            kkdf: this.calculateKKDF(),
-            bsmv: this.calculateBSMV(),
+            remainingCapital: Math.ceil((totalStandingCredit - paidAmount) * 100) / 100,
+            profitAmount: this.calculateProfit(totalStandingCredit),
+            kkdf: this.calculateKKDF(totalStandingCredit),
+            bsmv: this.calculateBSMV(totalStandingCredit),
           };
 
           // simple interest calculation
           const simplePaidAmount = this.calculateCapitalPaid(
             simpleEachPayment,
-            (this.calculateProfit() / this.installment),
-            this.calculateKKDF(),
-            this.calculateBSMV()
+            (this.calculateProfit(simpleTotalStandingCredit) / this.installment),
+            this.calculateSimpleKKDF(simpleTotalStandingCredit),
+            this.calculateSimpleBSMV(simpleTotalStandingCredit)
           );
 
           const simpleFirstPayment: CalculatedInterest = {
@@ -189,15 +227,15 @@ export class Calculator implements CalculatorType{
             eachInstalmentAmount: simpleEachPayment,
             capitalPaid: simplePaidAmount,
             remainingCapital: Math.ceil(
-              (this.creditAmount - simplePaidAmount) * 100) / 100,
-            profitAmount: this.calculateSimpleProfit(),
-            kkdf: this.calculateKKDF(),
-            bsmv: this.calculateBSMV(),
+              (simpleTotalStandingCredit - simplePaidAmount) * 100) / 100,
+            profitAmount: this.calculateSimpleProfit(simpleTotalStandingCredit),
+            kkdf: this.calculateSimpleKKDF(simpleTotalStandingCredit),
+            bsmv: this.calculateSimpleBSMV(simpleTotalStandingCredit),
           };
           totalStandingCredit = 
-            Math.ceil((this.creditAmount - paidAmount) * 100) / 100;
+            Math.ceil((totalStandingCredit - paidAmount) * 100) / 100;
           simpleTotalStandingCredit = 
-            Math.ceil((this.creditAmount - simplePaidAmount) * 100) / 100;
+            Math.ceil((simpleTotalStandingCredit - simplePaidAmount) * 100) / 100;
 
           cumulativeArr.push(firstPayment);
           simpleArr.push(simpleFirstPayment)
@@ -205,9 +243,9 @@ export class Calculator implements CalculatorType{
           // cumulative interest calculation
           const paidAmount = this.calculateCapitalPaid(
             eachInstallmentPayment,
-            this.calculateProfit(),
-            this.calculateKKDF(),
-            this.calculateBSMV()
+            this.calculateProfit(totalStandingCredit),
+            this.calculateKKDF(totalStandingCredit),
+            this.calculateBSMV(totalStandingCredit)
           );
   
           const payments: CalculatedInterest = {
@@ -216,9 +254,9 @@ export class Calculator implements CalculatorType{
             capitalPaid: paidAmount,
             remainingCapital:
               Math.ceil((totalStandingCredit - paidAmount) * 100) / 100,
-            profitAmount: this.calculateProfit(),
-            kkdf: this.calculateKKDF(),
-            bsmv: this.calculateBSMV(),
+            profitAmount: this.calculateProfit(totalStandingCredit),
+            kkdf: this.calculateKKDF(totalStandingCredit),
+            bsmv: this.calculateBSMV(totalStandingCredit),
           };
   
           totalStandingCredit =
@@ -228,9 +266,9 @@ export class Calculator implements CalculatorType{
           // simple interest calculation
           const simplePaidAmount = this.calculateCapitalPaid(
             simpleEachPayment,
-            this.calculateSimpleProfit(),
-            this.calculateKKDF(),
-            this.calculateBSMV()
+            this.calculateSimpleProfit(simpleTotalStandingCredit),
+            this.calculateSimpleKKDF(simpleTotalStandingCredit),
+            this.calculateSimpleBSMV(simpleTotalStandingCredit)
           );
 
           const simplePayments: CalculatedInterest = {
@@ -239,9 +277,9 @@ export class Calculator implements CalculatorType{
             capitalPaid: simplePaidAmount,
             remainingCapital: Math.ceil(
               (simpleTotalStandingCredit - simplePaidAmount) * 100) / 100,
-            profitAmount: this.calculateSimpleProfit(),
-            kkdf: this.calculateKKDF(),
-            bsmv: this.calculateBSMV(),
+            profitAmount: this.calculateSimpleProfit(simpleTotalStandingCredit),
+            kkdf: this.calculateSimpleKKDF(simpleTotalStandingCredit),
+            bsmv: this.calculateSimpleBSMV(simpleTotalStandingCredit),
           };
 
           simpleTotalStandingCredit = Math.ceil(

@@ -40,12 +40,13 @@ const CalculatorButton: React.ForwardRefRenderFunction<FormRef, Props> = (
         alertResult: () => {
           alert(
             `Bileşik faiz ile ödenecek toplam tutar: ${totalAmountCumulative}` + 
-            `\nBasit faiz ile ödenecek toplam tutar: ${totalAmountSimple}`
+            `\nBasit faiz ile ödenecek toplam tutar: ${totalAmountSimple}` +
+            `\nÖdeme tablosunu görmek için OK tuşuna basınız!`
           );
         },
       };
     },
-    [totalAmountCumulative]
+    [totalAmountCumulative, totalAmountSimple]
   );
 
   const handleClick = () => {
@@ -78,8 +79,6 @@ const CalculatorButton: React.ForwardRefRenderFunction<FormRef, Props> = (
       <PaymentsTable
         isModalOpen={isModalOpen}
         closeModal={closeModal}
-        cumulativeAmount={totalAmountCumulative}
-        simpleAmount={totalAmountSimple}
       />
     </>
   );
