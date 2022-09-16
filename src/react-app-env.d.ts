@@ -19,3 +19,8 @@ interface CumulativeInterestContextType {
   cumulativeInterest: (CalculatedInterest | null)[];
   handleCumulativeInterest: (arr: CalculatedInterest[]) => void;
 }
+
+interface SimpleInterestContextType {
+  simpleInterest: (CalculatedInterest | null)[];
+  handleSimpleInterest: (arr: CalculatedInterest[]) => void;
+}

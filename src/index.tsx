@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import CumulativeInterestContextProvider from './context/cumulativeInterestContext';
 import InstallmentProvider from './context/installmentContext';
+import SimpleInterestContextProvider from './context/simpleInterestContext';
 
 
 const root = ReactDOM.createRoot(
@@ -13,7 +14,9 @@ root.render(
   <React.StrictMode>
     <InstallmentProvider>
       <CumulativeInterestContextProvider>
-        <App />
+        <SimpleInterestContextProvider>
+          <App />
+        </SimpleInterestContextProvider>
       </CumulativeInterestContextProvider>
     </InstallmentProvider>
   </React.StrictMode>

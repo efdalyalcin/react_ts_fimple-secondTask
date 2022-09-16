@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useInstallment } from "../context/installmentContext";
 import AmountInput from "../components/AmountInput";
 import PercentInput from "./PercentInput";
-import CalculatorButton from "./CalculatorButton";
+import CalculatorButton, { FormRef } from "./CalculatorButton";
 
 export default function InputForm() {
   const { installment, handleInstallment } = useInstallment();
@@ -12,8 +12,13 @@ export default function InputForm() {
   const [installmentPeriod, setInstallmentPeriod] = useState("Aylık");
   const [taxRate, setTaxRate] = useState(0);
 
+  const formRef = useRef<FormRef>(null);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (formRef.current) {
+      formRef.current.alertResult();
+    }
   };
 
   return (
@@ -37,7 +42,7 @@ export default function InputForm() {
         <PercentInput
           value={profitRate}
           onChangeHandler={setProfitRate}
-          title={"Aylık Kar oranı:"}
+          title={"Aylık Kâr oranı:"}
           labelId={"profitAmountLabel"}
         />
 
@@ -69,6 +74,7 @@ export default function InputForm() {
         profitRate={profitRate}
         installmentPeriod={installmentPeriod}
         taxRate={taxRate}
+        ref={formRef}
       />
     </form>
   );
