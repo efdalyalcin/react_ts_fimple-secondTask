@@ -74,7 +74,8 @@ const CalculatorButton: React.ForwardRefRenderFunction<FormRef, Props> = (
     <>
       <button
         type="submit"
-        className="border rounded-md p-2 bg-gray-200"
+        className="border rounded-md p-2 bg-gray-200 
+          hover:bg-gray-50 transition-colors duration-500"
         onClick={handleClick}
       >
         Hesapla

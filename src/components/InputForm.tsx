@@ -25,7 +25,7 @@ export default function InputForm() {
 
   return (
     <form
-      className="flex flex-col gap-3 px-4 py-3 rounded-lg w-1/2 bg-slate-300"
+      className="flex flex-col gap-3 px-4 py-3 rounded-lg w-full md:w-1/2 bg-slate-300"
       onSubmit={(e) => handleSubmit(e)}
     >
       <div className="flex flex-col gap-3">
